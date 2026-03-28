@@ -3,6 +3,15 @@
 
 #include <sqlite3.h>
 
+// SQLCipher encryption APIs (not in standard sqlite3.h)
+#ifdef SQLITE_HAS_CODEC
+int sqlite3_key(sqlite3 *db, const void *pKey, int nKey);
+int sqlite3_key_v2(sqlite3 *db, const char *zDbName, const void *pKey, int nKey);
+int sqlite3_rekey(sqlite3 *db, const void *pKey, int nKey);
+int sqlite3_rekey_v2(sqlite3 *db, const char *zDbName, const void *pKey, int nKey);
+void sqlite3_activate_see(const char *zPassPhrase);
+#endif
+
 typedef void(*_errorLogCallback)(void *pArg, int iErrCode, const char *zMsg);
 
 static inline void _registerErrorLogCallback(_errorLogCallback callback) {
