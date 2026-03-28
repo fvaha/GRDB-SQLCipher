@@ -33,10 +33,18 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "GRDB",
+            name: "CSQLite",
             dependencies: [
                 .product(name: "SQLCipher", package: "SQLCipher.swift"),
             ],
+            path: "Sources/CSQLite",
+            publicHeadersPath: ".",
+            cSettings: [
+                .define("SQLITE_HAS_CODEC"),
+            ]),
+        .target(
+            name: "GRDB",
+            dependencies: ["CSQLite"],
             path: "GRDB",
             resources: [.copy("PrivacyInfo.xcprivacy")],
             cSettings: cSettings,
