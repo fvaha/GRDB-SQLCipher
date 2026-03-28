@@ -38,7 +38,7 @@ let package = Package(
                 .product(name: "SQLCipher", package: "SQLCipher.swift"),
             ],
             path: "Sources/CSQLite",
-            publicHeadersPath: ".",
+            publicHeadersPath: "include",
             cSettings: [
                 .define("SQLITE_HAS_CODEC"),
             ]),

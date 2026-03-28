@@ -1,4 +1,4 @@
-// Export the underlying SQLite library (SQLCipher via CSQLite shim)
+// Export the underlying SQLite library
 #if SWIFT_PACKAGE
 @_exported import CSQLite
 #elseif GRDBCIPHER
