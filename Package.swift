@@ -1,57 +1,42 @@
 // swift-tools-version:5.7
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// GRDB 6.24.0 + SQLCipher (TerraCrypt fork)
+// Based on commit 344878c from groue/GRDB.swift
 
 import Foundation
 import PackageDescription
 
 var swiftSettings: [SwiftSetting] = [
     .define("SQLITE_ENABLE_FTS5"),
+    .define("SQLITE_HAS_CODEC"),
+    .define("GRDBCIPHER"),
 ]
-var cSettings: [CSetting] = []
-var dependencies: [PackageDescription.Package.Dependency] = []
-
-// For Swift 5.8+
-//swiftSettings.append(.enableUpcomingFeature("ExistentialAny"))
-
-// Don't rely on those environment variables. They are ONLY testing conveniences:
-// $ SQLITE_ENABLE_PREUPDATE_HOOK=1 make test_SPM
-if ProcessInfo.processInfo.environment["SQLITE_ENABLE_PREUPDATE_HOOK"] == "1" {
-    swiftSettings.append(.define("SQLITE_ENABLE_PREUPDATE_HOOK"))
-    cSettings.append(.define("GRDB_SQLITE_ENABLE_PREUPDATE_HOOK"))
-}
-
-// The SPI_BUILDER environment variable enables documentation building
-// on <https://swiftpackageindex.com/groue/GRDB.swift>. See
-// <https://github.com/SwiftPackageIndex/SwiftPackageIndex-Server/issues/2122>
-// for more information.
-//
-// SPI_BUILDER also enables the `make docs-localhost` command.
-if ProcessInfo.processInfo.environment["SPI_BUILDER"] == "1" {
-    dependencies.append(.package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"))
-}
+var cSettings: [CSetting] = [
+    .define("SQLITE_HAS_CODEC"),
+    .define("GRDBCIPHER"),
+]
 
 let package = Package(
     name: "GRDB",
-    defaultLocalization: "en", // for tests
+    defaultLocalization: "en",
     platforms: [
-        .iOS(.v11),
-        .macOS(.v10_13),
-        .tvOS(.v11),
-        .watchOS(.v4),
+        .iOS(.v13),
+        .macOS(.v10_15),
+        .tvOS(.v13),
+        .watchOS(.v7),
     ],
     products: [
-        .library(name: "CSQLite", targets: ["CSQLite"]),
         .library(name: "GRDB", targets: ["GRDB"]),
         .library(name: "GRDB-dynamic", type: .dynamic, targets: ["GRDB"]),
     ],
-    dependencies: dependencies,
+    dependencies: [
+        .package(url: "https://github.com/sqlcipher/SQLCipher.swift.git", from: "4.10.0"),
+    ],
     targets: [
-        .systemLibrary(
-            name: "CSQLite",
-            providers: [.apt(["libsqlite3-dev"])]),
         .target(
             name: "GRDB",
-            dependencies: ["CSQLite"],
+            dependencies: [
+                .product(name: "SQLCipher", package: "SQLCipher.swift"),
+            ],
             path: "GRDB",
             resources: [.copy("PrivacyInfo.xcprivacy")],
             cSettings: cSettings,
